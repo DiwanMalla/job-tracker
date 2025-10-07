@@ -66,99 +66,12 @@ export default function EditApplicationForm({
     }));
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: "resume" | "coverLetter"
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (type === "resume") {
-        setResumeFile(file);
-        setDeleteResumeOnSave(false);
-      } else {
-        setCoverLetterFile(file);
-        setDeleteCoverLetterOnSave(false);
-      }
-    }
-  };
-
-  const uploadDocument = async (
-    file: File,
-    type: "RESUME" | "COVER_LETTER"
-  ): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", type);
-    formData.append("name", file.name);
-
-    const response = await fetch("/api/documents", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to upload ${type.toLowerCase()}`);
-    }
-
-    const result = await response.json();
-    return result.document.id;
-  };
-
-  const deleteDocument = async (documentId: string) => {
-    await fetch(`/api/documents/${documentId}`, {
-      method: "DELETE",
-    });
-  };
-
-  const handleRemoveDocument = (type: "resume" | "coverLetter") => {
-    if (type === "resume") {
-      setResumeFile(null);
-      setDeleteResumeOnSave(true);
-    } else {
-      setCoverLetterFile(null);
-      setDeleteCoverLetterOnSave(true);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      let resumeId = application.resumeId;
-      let coverLetterId = application.coverLetterId;
-
-      // Upload new resume if selected
-      if (resumeFile) {
-        setUploadingResume(true);
-        // Delete old resume if exists
-        if (application.resumeId) {
-          await deleteDocument(application.resumeId);
-        }
-        resumeId = await uploadDocument(resumeFile, "RESUME");
-        setUploadingResume(false);
-      } else if (deleteResumeOnSave && application.resumeId) {
-        // Delete existing resume if marked for deletion
-        await deleteDocument(application.resumeId);
-        resumeId = null;
-      }
-
-      // Upload new cover letter if selected
-      if (coverLetterFile) {
-        setUploadingCoverLetter(true);
-        // Delete old cover letter if exists
-        if (application.coverLetterId) {
-          await deleteDocument(application.coverLetterId);
-        }
-        coverLetterId = await uploadDocument(coverLetterFile, "COVER_LETTER");
-        setUploadingCoverLetter(false);
-      } else if (deleteCoverLetterOnSave && application.coverLetterId) {
-        // Delete existing cover letter if marked for deletion
-        await deleteDocument(application.coverLetterId);
-        coverLetterId = null;
-      }
-
       const response = await fetch(`/api/applications/${application.id}`, {
         method: "PUT",
         headers: {
@@ -171,8 +84,6 @@ export default function EditApplicationForm({
           followUpDate: formData.followUpDate
             ? new Date(formData.followUpDate).toISOString()
             : null,
-          resumeId,
-          coverLetterId,
         }),
       });
 
@@ -184,14 +95,10 @@ export default function EditApplicationForm({
       } else {
         setError(result.error || "Failed to update application");
       }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update application"
-      );
+    } catch {
+      setError("Failed to update application");
     } finally {
       setLoading(false);
-      setUploadingResume(false);
-      setUploadingCoverLetter(false);
     }
   };
 
@@ -468,170 +375,110 @@ export default function EditApplicationForm({
               Documents
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Resume Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Resume
+                  Resume{" "}
+                  {application.resume && (
+                    <span className="text-green-600">✓ Uploaded</span>
+                  )}
                 </label>
-                
-                {/* Show existing resume or upload area */}
-                {!deleteResumeOnSave && application.resume && !resumeFile ? (
-                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span className="text-sm font-medium text-gray-900">Current Resume</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveDocument("resume")}
-                        className="text-red-600 hover:text-red-700"
-                        title="Remove resume"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                    <p className="text-sm text-gray-600 truncate">{application.resume.originalName}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {(application.resume.size / 1024).toFixed(2)} KB
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                  <input
+                    type="file"
+                    id="resume"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                  />
+                  <label htmlFor="resume" className="cursor-pointer">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {application.resume ? "Replace resume" : "Upload resume"}
                     </p>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
-                    <input
-                      type="file"
-                      id="resume"
-                      accept=".pdf,.doc,.docx,.txt"
-                      onChange={(e) => handleFileChange(e, "resume")}
-                      className="hidden"
-                    />
-                    <label htmlFor="resume" className="cursor-pointer">
-                      {resumeFile ? (
-                        <div>
-                          <svg className="mx-auto h-12 w-12 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <p className="mt-2 text-sm font-medium text-green-600">
-                            {resumeFile.name}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            {(resumeFile.size / 1024).toFixed(2)} KB
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <svg
-                            className="mx-auto h-12 w-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                          </svg>
-                          <p className="mt-2 text-sm text-gray-600">
-                            {deleteResumeOnSave ? "Upload new resume" : "Replace resume"}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            PDF, DOC, DOCX, TXT up to 5MB
-                          </p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      PDF, DOC, DOCX up to 10MB
+                    </p>
+                  </label>
+                </div>
+                {application.resume && (
+                  <p className="mt-2 text-xs text-gray-600">
+                    Current: {application.resume.originalName}
+                  </p>
                 )}
               </div>
 
-              {/* Cover Letter Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cover Letter
+                  Cover Letter{" "}
+                  {application.coverLetter && (
+                    <span className="text-green-600">✓ Uploaded</span>
+                  )}
                 </label>
-                
-                {/* Show existing cover letter or upload area */}
-                {!deleteCoverLetterOnSave && application.coverLetter && !coverLetterFile ? (
-                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span className="text-sm font-medium text-gray-900">Current Cover Letter</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveDocument("coverLetter")}
-                        className="text-red-600 hover:text-red-700"
-                        title="Remove cover letter"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                    <p className="text-sm text-gray-600 truncate">{application.coverLetter.originalName}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {(application.coverLetter.size / 1024).toFixed(2)} KB
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                  <input
+                    type="file"
+                    id="coverLetter"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                  />
+                  <label htmlFor="coverLetter" className="cursor-pointer">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {application.coverLetter
+                        ? "Replace cover letter"
+                        : "Upload cover letter"}
                     </p>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
-                    <input
-                      type="file"
-                      id="coverLetter"
-                      accept=".pdf,.doc,.docx,.txt"
-                      onChange={(e) => handleFileChange(e, "coverLetter")}
-                      className="hidden"
-                    />
-                    <label htmlFor="coverLetter" className="cursor-pointer">
-                      {coverLetterFile ? (
-                        <div>
-                          <svg className="mx-auto h-12 w-12 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <p className="mt-2 text-sm font-medium text-green-600">
-                            {coverLetterFile.name}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            {(coverLetterFile.size / 1024).toFixed(2)} KB
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <svg
-                            className="mx-auto h-12 w-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                          </svg>
-                          <p className="mt-2 text-sm text-gray-600">
-                            {deleteCoverLetterOnSave ? "Upload new cover letter" : "Replace cover letter"}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            PDF, DOC, DOCX, TXT up to 5MB
-                          </p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      PDF, DOC, DOCX up to 10MB
+                    </p>
+                  </label>
+                </div>
+                {application.coverLetter && (
+                  <p className="mt-2 text-xs text-gray-600">
+                    Current: {application.coverLetter.originalName}
+                  </p>
                 )}
               </div>
             </div>
+            <p className="mt-3 text-xs text-gray-500">
+              <svg
+                className="inline-block w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              File upload functionality will be fully implemented soon.
+            </p>
           </div>
 
           <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
@@ -643,14 +490,10 @@ export default function EditApplicationForm({
             </Link>
             <button
               type="submit"
-              disabled={loading || uploadingResume || uploadingCoverLetter}
+              disabled={loading}
               className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading
-                ? uploadingResume || uploadingCoverLetter
-                  ? "Uploading files..."
-                  : "Saving..."
-                : "Save Changes"}
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>
