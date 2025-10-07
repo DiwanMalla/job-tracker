@@ -393,7 +393,7 @@ export default async function AnalyticsPage() {
           {/* Salary Insights */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">💰 Salary Insights</h2>
-            {applicationsWithSalary.length > 0 ? (
+            {applicationsWithSalary > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
                   <div>
@@ -418,7 +418,7 @@ export default async function AnalyticsPage() {
 
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600">
-                    Based on {applicationsWithSalary.length} application{applicationsWithSalary.length > 1 ? 's' : ''} with salary data
+                    Based on {applicationsWithSalary} application{applicationsWithSalary > 1 ? 's' : ''} with salary data
                   </p>
                 </div>
               </div>

@@ -127,27 +127,27 @@ export default function AnalyticsCharts({ data }: AnalyticsChartsProps) {
         </div>
       </div>
 
-      {/* Weekly Activity Chart */}
+      {/* Monthly Timeline Chart */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Weekly Activity (Last 8 Weeks)</h2>
-        {weeklyData.length > 0 ? (
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Applications Timeline</h2>
+        {months.length > 0 ? (
           <div className="space-y-4">
             {/* Bar Chart */}
             <div className="flex items-end justify-between h-64 space-x-2">
-              {weeklyData.map((week) => {
-                const height = (week.count / maxWeeklyValue) * 100;
+              {months.slice(-6).map((month) => {
+                const value = monthlyData[month];
+                const height = (value / maxMonthlyValue) * 100;
                 
                 return (
-                  <div key={week.week} className="flex-1 flex flex-col items-center">
+                  <div key={month} className="flex-1 flex flex-col items-center">
                     <div className="w-full flex flex-col items-center justify-end h-56">
-                      <span className="text-xs font-semibold text-gray-700 mb-1">{week.count}</span>
+                      <span className="text-xs font-semibold text-gray-700 mb-1">{value}</span>
                       <div 
-                        className="w-full bg-gradient-to-t from-blue-600 to-purple-600 rounded-t-lg transition-all duration-500 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
-                        style={{ height: `${height}%`, minHeight: week.count > 0 ? '8px' : '0' }}
-                        title={`${week.date}: ${week.count} applications`}
+                        className="w-full bg-gradient-to-t from-blue-600 to-purple-600 rounded-t-lg transition-all duration-500 hover:from-blue-700 hover:to-purple-700"
+                        style={{ height: `${height}%`, minHeight: value > 0 ? '8px' : '0' }}
                       />
                     </div>
-                    <span className="text-xs text-gray-600 mt-2 text-center">{week.date}</span>
+                    <span className="text-xs text-gray-600 mt-2 text-center">{month}</span>
                   </div>
                 );
               })}
@@ -155,13 +155,13 @@ export default function AnalyticsCharts({ data }: AnalyticsChartsProps) {
 
             {/* Line Chart Alternative */}
             <div className="mt-8 pt-6 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-4">Application Trend</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-4">Trend</h3>
               <div className="relative h-32">
                 <svg className="w-full h-full" preserveAspectRatio="none">
                   <polyline
-                    points={weeklyData.map((week, index) => {
-                      const x = (index / (weeklyData.length - 1)) * 100;
-                      const y = 100 - ((week.count / maxWeeklyValue) * 80);
+                    points={months.slice(-6).map((month, index) => {
+                      const x = (index / (months.slice(-6).length - 1)) * 100;
+                      const y = 100 - ((monthlyData[month] / maxMonthlyValue) * 80);
                       return `${x},${y}`;
                     }).join(' ')}
                     fill="none"
@@ -179,45 +179,21 @@ export default function AnalyticsCharts({ data }: AnalyticsChartsProps) {
                   </defs>
                   
                   {/* Data points */}
-                  {weeklyData.map((week, index) => {
-                    const x = (index / (weeklyData.length - 1)) * 100;
-                    const y = 100 - ((week.count / maxWeeklyValue) * 80);
+                  {months.slice(-6).map((month, index) => {
+                    const x = (index / (months.slice(-6).length - 1)) * 100;
+                    const y = 100 - ((monthlyData[month] / maxMonthlyValue) * 80);
                     return (
                       <circle
-                        key={week.week}
+                        key={month}
                         cx={`${x}%`}
                         cy={`${y}%`}
                         r="4"
                         fill="#3B82F6"
                         className="transition-all duration-500"
-                      >
-                        <title>{week.date}: {week.count} applications</title>
-                      </circle>
+                      />
                     );
                   })}
                 </svg>
-              </div>
-            </div>
-
-            {/* Summary Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">
-                  {weeklyData.reduce((sum, week) => sum + week.count, 0)}
-                </p>
-                <p className="text-xs text-gray-600 mt-1">Total (8 weeks)</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-purple-600">
-                  {Math.max(...weeklyData.map(w => w.count))}
-                </p>
-                <p className="text-xs text-gray-600 mt-1">Peak week</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-indigo-600">
-                  {(weeklyData.reduce((sum, week) => sum + week.count, 0) / weeklyData.length).toFixed(1)}
-                </p>
-                <p className="text-xs text-gray-600 mt-1">Avg per week</p>
               </div>
             </div>
           </div>
