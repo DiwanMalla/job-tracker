@@ -19,7 +19,7 @@ export async function GET(
 
     const { id } = await params;
 
-    const document = await DocumentService.findById(id, session.user.id);
+    const document = await DocumentService.getById(id, session.user.id);
 
     if (!document) {
       return NextResponse.json(
