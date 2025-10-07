@@ -138,8 +138,6 @@ export async function POST(request: NextRequest) {
               : validationResult.data.followUpDate.toISOString())
           : undefined,
         salary: validationResult.data.salary ?? undefined,
-        resumeId: validationResult.data.resumeId ?? undefined,
-        coverLetterId: validationResult.data.coverLetterId ?? undefined,
       }
     );
 

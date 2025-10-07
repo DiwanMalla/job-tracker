@@ -71,7 +71,6 @@ export async function PUT(
       session.user.id,
       {
         ...validationResult.data,
-        id: params.id,
         applicationDate: validationResult.data.applicationDate 
           ? (typeof validationResult.data.applicationDate === 'string' 
               ? validationResult.data.applicationDate 

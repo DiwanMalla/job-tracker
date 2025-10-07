@@ -129,17 +129,7 @@ export async function POST(request: NextRequest) {
       session.user.id,
       {
         ...validationResult.data,
-        applicationDate: typeof validationResult.data.applicationDate === 'string' 
-          ? validationResult.data.applicationDate 
-          : validationResult.data.applicationDate.toISOString(),
-        followUpDate: validationResult.data.followUpDate 
-          ? (typeof validationResult.data.followUpDate === 'string' 
-              ? validationResult.data.followUpDate 
-              : validationResult.data.followUpDate.toISOString())
-          : undefined,
         salary: validationResult.data.salary ?? undefined,
-        resumeId: validationResult.data.resumeId ?? undefined,
-        coverLetterId: validationResult.data.coverLetterId ?? undefined,
       }
     );
 
