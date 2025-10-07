@@ -47,11 +47,11 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-// Share settings schema - for API input validation
+// Share settings schema
 export const shareSettingsSchema = z.object({
-  isActive: z.boolean().optional(),
-  showNotes: z.boolean().optional().default(false),
-  showDocuments: z.boolean().optional().default(false),
+  isActive: z.boolean().optional().default(true),
+  showNotes: z.boolean().default(false),
+  showDocuments: z.boolean().default(false),
   expiresAt: z.preprocess(
     (val) => {
       if (!val || val === '' || val === null) return undefined;
