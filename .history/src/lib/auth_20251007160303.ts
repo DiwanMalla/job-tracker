@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Validate input
-          const { email, password } = loginSchema.parse(credentials);
+          const { email, password } = signInSchema.parse(credentials);
 
           // Find user in database
           const user = await prisma.user.findUnique({

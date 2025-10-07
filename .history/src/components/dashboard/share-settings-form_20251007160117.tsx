@@ -64,6 +64,7 @@ export default function ShareSettingsForm({ initialSettings }: ShareSettingsForm
           setSuccess('Sharing enabled successfully!');
           router.refresh();
         } else {
+          console.error('API Response:', result);
           setError(result.error || 'Failed to enable sharing');
         }
       } else {

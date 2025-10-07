@@ -35,10 +35,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log('📥 Received body:', JSON.stringify(body, null, 2));
     
     const validationResult = shareSettingsSchema.safeParse(body);
 
     if (!validationResult.success) {
+      console.error('❌ Validation failed:', JSON.stringify(validationResult.error.format(), null, 2));
       return NextResponse.json(
         { 
           error: 'Validation failed', 
@@ -47,6 +49,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    console.log('✅ Validation passed:', JSON.stringify(validationResult.data, null, 2));
 
     const data = validationResult.data;
     const settings = await ShareService.createOrUpdate(

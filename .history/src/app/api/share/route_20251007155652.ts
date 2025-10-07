@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
     const settings = await ShareService.createOrUpdate(
       session.user.id,
       {
-        showNotes: data.showNotes ?? false,
-        showDocuments: data.showDocuments ?? false,
+        showNotes: data.showNotes,
+        showDocuments: data.showDocuments,
         expiresAt: data.expiresAt as Date | undefined,
       }
     );
