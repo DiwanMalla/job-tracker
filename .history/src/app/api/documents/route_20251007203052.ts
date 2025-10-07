@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const type = formData.get('type') as DocumentType;
+    const name = formData.get('name') as string;
 
     if (!file) {
       return NextResponse.json(
@@ -59,12 +60,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Upload to Vercel Blob and save to database
-    const document = await DocumentService.create(
-      session.user.id,
-      file,
-      type
-    );
+    // Save file to disk
+    await saveFile(file, type);
+
+    // Save to database
+    const document = await DocumentService.create(session.user.id, {
+      name: name || file.name,
+      type,
+      buffer: Buffer.from(await file.arrayBuffer()),
+      originalName: file.name,
+      size: file.size,
+    });
 
     return NextResponse.json(
       {
@@ -77,8 +83,15 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error uploading document:', error);
     
+    if (error instanceof FileUploadError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to upload document' },
+      { error: 'Failed to upload document' },
       { status: 500 }
     );
   }

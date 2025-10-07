@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const type = formData.get('type') as DocumentType;
+    const name = formData.get('name') as string;
 
     if (!file) {
       return NextResponse.json(
