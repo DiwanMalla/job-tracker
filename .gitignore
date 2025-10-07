@@ -41,4 +41,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# IDE history (Local History extension)
+.history/
+
+# Internal documentation (keep local only)
+ENVIRONMENT_SETUP.md
+LINKEDIN_POST.md
+DEPLOYMENT_CHECKLIST.md
+
 /src/generated/prisma
