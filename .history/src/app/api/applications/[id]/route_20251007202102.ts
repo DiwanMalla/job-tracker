@@ -44,7 +44,7 @@ export async function GET(
 // PUT /api/applications/[id] - Update job application
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await auth();
@@ -52,12 +52,10 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-
     const body = await request.json();
     const validationResult = updateJobApplicationSchema.safeParse({
       ...body,
-      id,
+      id: params.id,
     });
 
     if (!validationResult.success) {
@@ -71,11 +69,11 @@ export async function PUT(
     }
 
     const application = await JobApplicationService.update(
-      id,
+      params.id,
       session.user.id,
       {
         ...validationResult.data,
-        id,
+        id: params.id,
         applicationDate: validationResult.data.applicationDate 
           ? (typeof validationResult.data.applicationDate === 'string' 
               ? validationResult.data.applicationDate 
@@ -117,7 +115,7 @@ export async function PUT(
 // DELETE /api/applications/[id] - Delete job application
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await auth();
@@ -125,9 +123,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-
-    await JobApplicationService.delete(id, session.user.id);
+    await JobApplicationService.delete(params.id, session.user.id);
 
     return NextResponse.json({
       success: true,
