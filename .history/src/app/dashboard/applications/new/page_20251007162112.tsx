@@ -398,53 +398,27 @@ export default function NewApplicationPage() {
                       id="resume"
                       accept=".pdf,.doc,.docx"
                       className="hidden"
-                      onChange={(e) => handleFileChange(e, 'resume')}
                     />
                     <label htmlFor="resume" className="cursor-pointer">
-                      {resumeFile ? (
-                        <div className="text-sm">
-                          <svg
-                            className="mx-auto h-12 w-12 text-green-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <p className="mt-2 text-gray-900 font-medium">{resumeFile.name}</p>
-                          <p className="mt-1 text-xs text-gray-500">{(resumeFile.size / 1024).toFixed(1)} KB</p>
-                          {uploadingResume && (
-                            <p className="mt-2 text-blue-600">Uploading...</p>
-                          )}
-                        </div>
-                      ) : (
-                        <>
-                          <svg
-                            className="mx-auto h-12 w-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                          </svg>
-                          <p className="mt-2 text-sm text-gray-600">
-                            Click to upload resume
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            PDF, DOC, DOCX up to 5MB
-                          </p>
-                        </>
-                      )}
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p className="mt-2 text-sm text-gray-600">
+                        Click to upload resume
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        PDF, DOC, DOCX up to 10MB
+                      </p>
                     </label>
                   </div>
                 </div>
@@ -462,57 +436,48 @@ export default function NewApplicationPage() {
                       id="coverLetter"
                       accept=".pdf,.doc,.docx"
                       className="hidden"
-                      onChange={(e) => handleFileChange(e, 'coverLetter')}
                     />
                     <label htmlFor="coverLetter" className="cursor-pointer">
-                      {coverLetterFile ? (
-                        <div className="text-sm">
-                          <svg
-                            className="mx-auto h-12 w-12 text-green-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <p className="mt-2 text-gray-900 font-medium">{coverLetterFile.name}</p>
-                          <p className="mt-1 text-xs text-gray-500">{(coverLetterFile.size / 1024).toFixed(1)} KB</p>
-                          {uploadingCoverLetter && (
-                            <p className="mt-2 text-blue-600">Uploading...</p>
-                          )}
-                        </div>
-                      ) : (
-                        <>
-                          <svg
-                            className="mx-auto h-12 w-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                          </svg>
-                          <p className="mt-2 text-sm text-gray-600">
-                            Click to upload cover letter
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            PDF, DOC, DOCX up to 5MB
-                          </p>
-                        </>
-                      )}
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p className="mt-2 text-sm text-gray-600">
+                        Click to upload cover letter
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        PDF, DOC, DOCX up to 10MB
+                      </p>
                     </label>
                   </div>
                 </div>
               </div>
+              <p className="mt-3 text-xs text-gray-500">
+                <svg
+                  className="inline-block w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                File upload functionality will be fully implemented soon. For
+                now, you can add applications and attach documents later.
+              </p>
             </div>
 
             <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
@@ -524,14 +489,10 @@ export default function NewApplicationPage() {
               </Link>
               <button
                 type="submit"
-                disabled={loading || uploadingResume || uploadingCoverLetter}
+                disabled={loading}
                 className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading 
-                  ? (uploadingResume || uploadingCoverLetter 
-                    ? "Uploading files..." 
-                    : "Creating...") 
-                  : "Create Application"}
+                {loading ? "Creating..." : "Create Application"}
               </button>
             </div>
           </form>
