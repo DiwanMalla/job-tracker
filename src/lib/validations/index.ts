@@ -6,6 +6,7 @@ export const createJobApplicationSchema = z.object({
   companyName: z.string().min(1, "Company name is required").max(255),
   position: z.string().min(1, "Position is required").max(255),
   description: z.string().optional(),
+  descriptionFormat: z.enum(["plain", "markdown"]).default("plain"),
   requirements: z.string().optional(),
   location: z.string().optional(),
   salary: z.number().positive().optional().nullable(),

@@ -14,13 +14,14 @@ export default async function EditApplicationPage({
   params,
 }: EditApplicationPageProps) {
   const session = await auth();
+  const { id } = await params;
 
   if (!session?.user?.id) {
     redirect("/auth/signin");
   }
 
   const application = await JobApplicationService.findById(
-    params.id,
+    id,
     session.user.id
   );
 

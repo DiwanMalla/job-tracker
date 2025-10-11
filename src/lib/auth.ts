@@ -77,7 +77,6 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true, // Important for Vercel deployment
 };
 
 export default NextAuth(authOptions);

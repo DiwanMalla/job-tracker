@@ -10,7 +10,7 @@ export class DocumentService {
     type: DocumentType
   ): Promise<Document> {
     // Upload to Vercel Blob
-    const { url, pathname } = await uploadToVercelBlob(
+    const { url } = await uploadToVercelBlob(
       file,
       userId,
       type === 'RESUME' ? 'resume' : 'cover-letter'

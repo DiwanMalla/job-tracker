@@ -29,23 +29,24 @@ model User {
 
 // JobApplication model - Single Responsibility: Job application data
 model JobApplication {
-  id              String            @id @default(cuid())
-  userId          String
-  companyName     String
-  position        String
-  description     String?
-  requirements    String?
-  location        String?
-  salary          Float?
-  applicationDate DateTime
-  status          ApplicationStatus @default(APPLIED)
-  jobUrl          String?
-  notes           String?
-  followUpDate    DateTime?
-  resumeId        String?
-  coverLetterId   String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id                String            @id @default(cuid())
+  userId            String
+  companyName       String
+  position          String
+  description       String?
+  descriptionFormat String?           @default("plain")
+  requirements      String?
+  location          String?
+  salary            Float?
+  applicationDate   DateTime
+  status            ApplicationStatus @default(APPLIED)
+  jobUrl            String?
+  notes             String?
+  followUpDate      DateTime?
+  resumeId          String?
+  coverLetterId     String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   // Relations
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)

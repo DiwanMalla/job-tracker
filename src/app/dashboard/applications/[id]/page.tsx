@@ -6,11 +6,13 @@ import { JobApplicationService } from "@/lib/services/job-application.service";
 import { formatDate, getStatusColor, formatCurrency } from "@/lib/utils";
 import DeleteApplicationButton from "@/components/dashboard/delete-application-button";
 import { DocumentViewer } from "@/components/documents/document-viewer";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import rehypeRaw from "rehype-raw";
 
 interface ApplicationPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ApplicationPage({
@@ -22,8 +24,10 @@ export default async function ApplicationPage({
     redirect("/auth/signin");
   }
 
+  const { id } = await params;
+
   const application = await JobApplicationService.findById(
-    params.id,
+    id,
     session.user.id
   );
 
@@ -139,9 +143,78 @@ export default async function ApplicationPage({
             <h2 className="text-lg font-semibold text-gray-900 mb-3">
               Job Description
             </h2>
-            <p className="text-gray-700 whitespace-pre-wrap">
-              {application.description}
-            </p>
+            {application.descriptionFormat === "markdown" ? (
+              <div className="prose prose-sm max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight, rehypeRaw]}
+                  components={{
+                    h1: ({ children }) => (
+                      <h1 className="text-xl font-bold text-gray-900 mb-2">
+                        {children}
+                      </h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                        {children}
+                      </h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 className="text-base font-medium text-gray-900 mb-1">
+                        {children}
+                      </h3>
+                    ),
+                    p: ({ children }) => (
+                      <p className="text-gray-700 mb-2">{children}</p>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="list-disc list-inside text-gray-700 mb-2 ml-4">
+                        {children}
+                      </ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal list-inside text-gray-700 mb-2 ml-4">
+                        {children}
+                      </ol>
+                    ),
+                    li: ({ children }) => (
+                      <li className="mb-1">{children}</li>
+                    ),
+                    code: ({ children }) => (
+                      <code className="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono">
+                        {children}
+                      </code>
+                    ),
+                    pre: ({ children }) => (
+                      <pre className="bg-gray-100 p-3 rounded text-sm font-mono overflow-x-auto mb-2">
+                        {children}
+                      </pre>
+                    ),
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-2">
+                        {children}
+                      </blockquote>
+                    ),
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        className="text-blue-600 hover:text-blue-700 underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {application.description}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <p className="text-gray-700 whitespace-pre-wrap">
+                {application.description}
+              </p>
+            )}
           </div>
         )}
 

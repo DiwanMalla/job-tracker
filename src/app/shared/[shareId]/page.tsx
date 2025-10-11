@@ -28,12 +28,12 @@ export default async function SharedPage({ params }: SharedPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white mb-4">
             <svg
-              className="w-8 h-8"
+              className="w-6 h-6 sm:w-8 sm:h-8"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -46,14 +46,14 @@ export default async function SharedPage({ params }: SharedPageProps) {
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2">
             Shared Job Applications
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm sm:text-base">
             View-only access to job application tracker
           </p>
           {shareSettings.expiresAt && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-xs sm:text-sm text-gray-500 mt-2">
               Expires on: {new Date(shareSettings.expiresAt).toLocaleDateString()}
             </p>
           )}

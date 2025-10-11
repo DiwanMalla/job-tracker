@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import DashboardLayout from "@/components/dashboard/dashboard-layout";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import type { ApplicationStatus } from "@/types";
 
 interface FormData {
   companyName: string;
   position: string;
   description: string;
+  descriptionFormat: "plain" | "markdown";
   requirements: string;
   location: string;
   salary: string;
@@ -34,11 +36,12 @@ export default function NewApplicationPage() {
     companyName: "",
     position: "",
     description: "",
+    descriptionFormat: "plain",
     requirements: "",
     location: "",
     salary: "",
     jobUrl: "",
-    applicationDate: new Date().toISOString().split("T")[0],
+    applicationDate: new Date().toLocaleDateString('en-CA'), // Use local date in YYYY-MM-DD format
     status: "APPLIED",
     notes: "",
   });
@@ -52,6 +55,20 @@ export default function NewApplicationPage() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      description: value,
+    }));
+  };
+
+  const handleFormatChange = (format: "plain" | "markdown") => {
+    setFormData((prev) => ({
+      ...prev,
+      descriptionFormat: format,
     }));
   };
 
@@ -225,20 +242,16 @@ export default function NewApplicationPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Job Description
               </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
+              <MarkdownEditor
                 value={formData.description}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                onChange={handleDescriptionChange}
+                format={formData.descriptionFormat}
+                onFormatChange={handleFormatChange}
                 placeholder="Brief description of the role..."
+                rows={8}
               />
             </div>
 
@@ -527,10 +540,10 @@ export default function NewApplicationPage() {
                 disabled={loading || uploadingResume || uploadingCoverLetter}
                 className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading 
-                  ? (uploadingResume || uploadingCoverLetter 
-                    ? "Uploading files..." 
-                    : "Creating...") 
+                {loading
+                  ? (uploadingResume || uploadingCoverLetter
+                    ? "Uploading files..."
+                    : "Creating...")
                   : "Create Application"}
               </button>
             </div>

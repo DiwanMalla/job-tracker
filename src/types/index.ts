@@ -25,6 +25,7 @@ export interface CreateJobApplicationForm {
   companyName: string;
   position: string;
   description?: string;
+  descriptionFormat?: string;
   requirements?: string;
   location?: string;
   salary?: number;

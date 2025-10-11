@@ -8,7 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 
 // Date formatting utilities (DRY principle)
 export const formatDate = (date: Date | string): string => {
-  const d = new Date(date);
+  let d: Date;
+
+  if (typeof date === 'string') {
+    // If the string doesn't end with 'Z', assume it's UTC and add 'Z'
+    const dateStr = date.endsWith('Z') ? date : date + 'Z';
+    d = new Date(dateStr);
+  } else {
+    d = date;
+  }
+
   return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",

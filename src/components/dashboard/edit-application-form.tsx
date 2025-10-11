@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import type { JobApplication, ApplicationStatus } from "@/types";
 
 interface EditApplicationFormProps {
@@ -13,6 +14,7 @@ interface FormData {
   companyName: string;
   position: string;
   description: string;
+  descriptionFormat: "plain" | "markdown";
   requirements: string;
   location: string;
   salary: string;
@@ -40,17 +42,16 @@ export default function EditApplicationForm({
     companyName: application.companyName || "",
     position: application.position || "",
     description: application.description || "",
+    descriptionFormat: (application.descriptionFormat as "plain" | "markdown") || "plain",
     requirements: application.requirements || "",
     location: application.location || "",
     salary: application.salary?.toString() || "",
     jobUrl: application.jobUrl || "",
-    applicationDate: new Date(application.applicationDate)
-      .toISOString()
-      .split("T")[0],
+    applicationDate: new Date(application.applicationDate).toLocaleDateString('en-CA'),
     status: application.status,
     notes: application.notes || "",
     followUpDate: application.followUpDate
-      ? new Date(application.followUpDate).toISOString().split("T")[0]
+      ? new Date(application.followUpDate).toLocaleDateString('en-CA')
       : "",
   });
 
@@ -63,6 +64,20 @@ export default function EditApplicationForm({
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      description: value,
+    }));
+  };
+
+  const handleFormatChange = (format: "plain" | "markdown") => {
+    setFormData((prev) => ({
+      ...prev,
+      descriptionFormat: format,
     }));
   };
 
@@ -291,20 +306,16 @@ export default function EditApplicationForm({
           </div>
 
           <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Job Description
             </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={4}
+            <MarkdownEditor
               value={formData.description}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+              onChange={handleDescriptionChange}
+              format={formData.descriptionFormat}
+              onFormatChange={handleFormatChange}
               placeholder="Brief description of the role..."
+              rows={8}
             />
           </div>
 
@@ -636,7 +647,7 @@ export default function EditApplicationForm({
 
           <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
             <Link
-              href={`/dashboard/applications/${application.id}`}
+              href="/dashboard"
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Cancel
